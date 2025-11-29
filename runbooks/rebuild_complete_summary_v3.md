@@ -4,6 +4,12 @@
 
 This document summarizes the complete rebuild process for KeyBuzz v3 infrastructure, including all phases and verification steps.
 
+## File Sources
+
+- **`servers.tsv`**: Source of truth from v2 infrastructure (legacy, imported from Infra-v2-legacy)
+- **`servers_v3.tsv`**: Complete v3 inventory with all 49 servers, including role_v3 and logical_name_v3 columns
+- **`rebuild_order_v3.json`**: Ordered list of **all rebuildable servers** (47 servers, excluding install-01 and install-v3)
+
 ## Execution Phases
 
 ### ✅ PHASE 0: Preparation and Verification
@@ -30,15 +36,11 @@ This document summarizes the complete rebuild process for KeyBuzz v3 infrastruct
 - Updated `reset_hetzner.yml` with Hetzner API integration
 - Documented process in `rebuild_servers_v3.md`
 
-**Servers to Rebuild**: 28 servers (excluding install-01 and install-v3)
+**Servers to Rebuild**: 47 servers (excluding install-01 and install-v3)
 
-**Batches**:
-1. k8s-master-01, k8s-master-02, k8s-master-03, k8s-worker-01, k8s-worker-02
-2. db-master-01, db-slave-01, db-slave-02, redis-01, redis-02
-3. redis-03, queue-01, queue-02, queue-03, minio-01
-4. minio-02, minio-03, maria-01, maria-02, maria-03
-5. haproxy-01, haproxy-02, vault-01, backup-01, monitor-01
-6. proxysql-01, proxysql-02, builder-01
+**Batches**: 10 batches of 5 servers each (last batch may have fewer)
+
+The complete batch list is defined in `servers/rebuild_order_v3.json`. Each batch contains up to 5 servers, processed sequentially to respect Hetzner API rate limits.
 
 **Execution**:
 ```bash
@@ -122,7 +124,7 @@ ansible all -a "mount | grep xfs" -i ansible/inventory/hosts.yml
 
 ### After PHASE 1 (Rebuild)
 
-- [ ] All 28 servers show "running" status in Hetzner Cloud
+- [ ] All 47 servers show "running" status in Hetzner Cloud
 - [ ] All servers respond to ping (public IP)
 - [ ] SSH accessible with root password on all servers
 - [ ] No volumes attached (will be created in PHASE 3)
@@ -147,10 +149,10 @@ ansible all -a "mount | grep xfs" -i ansible/inventory/hosts.yml
 
 ### Expected Server Counts
 
-- **Total servers**: 50 (from servers_v3.tsv)
+- **Total servers**: 49 (from servers_v3.tsv)
 - **Excluded from rebuild**: 2 (install-01, install-v3)
-- **Servers to rebuild**: 28
-- **Batches**: 6
+- **Servers to rebuild**: 47
+- **Batches**: 10 (batches of 5, last batch may have fewer)
 
 ### Volume Specifications
 

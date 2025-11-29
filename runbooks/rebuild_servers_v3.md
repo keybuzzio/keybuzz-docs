@@ -21,6 +21,12 @@ The rebuild process:
 - Ansible installed on install-v3
 - Access to `servers_v3.tsv` and `rebuild_order_v3.json`
 
+## File Sources
+
+- **`servers.tsv`**: Source of truth from v2 infrastructure (legacy)
+- **`servers_v3.tsv`**: Complete v3 inventory with all servers + role_v3 and logical_name_v3 columns
+- **`rebuild_order_v3.json`**: Ordered list of **all rebuildable servers** (47 servers, excluding install-01 and install-v3)
+
 ## Process Overview
 
 ### Batch Processing
@@ -33,12 +39,13 @@ Servers are processed in **batches of 5** to:
 ### Rebuild Order
 
 The rebuild order is defined in `rebuild_order_v3.json`:
-- **Batch 1**: k8s-master-01, k8s-master-02, k8s-master-03, k8s-worker-01, k8s-worker-02
-- **Batch 2**: db-master-01, db-slave-01, db-slave-02, redis-01, redis-02
-- **Batch 3**: redis-03, queue-01, queue-02, queue-03, minio-01
-- **Batch 4**: minio-02, minio-03, maria-01, maria-02, maria-03
-- **Batch 5**: haproxy-01, haproxy-02, vault-01, backup-01, monitor-01
-- **Batch 6**: proxysql-01, proxysql-02, builder-01
+- **Total servers to rebuild**: 47 (all servers except install-01 and install-v3)
+- **Total batches**: 10 (batches of 5 servers each, last batch may have fewer)
+- **Batch size**: 5 servers per batch
+
+The complete batch list is available in `servers/rebuild_order_v3.json` under the `batches` key. Each batch contains 5 servers (except the last batch which may have fewer).
+
+**Note**: The batch order is optimized to balance server roles and minimize infrastructure impact.
 
 ### Excluded Servers
 
