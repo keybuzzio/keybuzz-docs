@@ -2,7 +2,15 @@
 
 ## Overview
 
-This runbook describes the XFS filesystem setup process for KeyBuzz v3 infrastructure servers.
+This runbook describes the XFS filesystem setup process for KeyBuzz v3 infrastructure servers. This is **PHASE 3** and must be executed **AFTER** SSH mesh deployment (PHASE 2).
+
+## ⚠️ Prerequisites
+
+**PHASE 3 must be executed AFTER:**
+- ✅ PHASE 1: All servers rebuilt (see `rebuild_servers_v3.md`)
+- ✅ PHASE 2: SSH keys deployed (see `ssh_mesh_v3.md`)
+- ✅ SSH connectivity verified via private IPs
+- ✅ Ansible can connect to all servers
 
 ## Purpose
 
@@ -11,6 +19,14 @@ XFS is used for:
 - High-performance I/O requirements
 - Large file support
 - Better performance than ext4 for data workloads
+
+## Process Overview
+
+PHASE 3 includes:
+1. **Volume Creation**: Create Hetzner Cloud volumes (sized per `rebuild_order_v3.json`)
+2. **Volume Attachment**: Attach volumes to servers via Hetzner API
+3. **XFS Formatting**: Apply XFS role to format and mount disks
+4. **Verification**: Verify mounts and test write operations
 
 ## Architecture
 

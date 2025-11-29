@@ -1,5 +1,18 @@
 # SSH Mesh v3 - Runbook
 
+## ⚠️ CRITICAL WARNING
+
+**NE DÉPLOYER SSH KEY QUE SUR SERVEURS REBUILT**
+
+**DO NOT deploy SSH keys until all servers have been successfully rebuilt (PHASE 1).**
+
+The SSH deployment is **PHASE 2** and must be executed **AFTER**:
+- All servers have been rebuilt with Ubuntu 24.04
+- All servers are in "running" status
+- All servers are accessible via SSH with root password
+
+See `rebuild_servers_v3.md` for PHASE 1 (rebuild process).
+
 ## Overview
 
 The SSH mesh for KeyBuzz v3 enables secure communication between install-v3 bastion and all infrastructure servers using private IP addresses.
@@ -11,6 +24,13 @@ The SSH mesh for KeyBuzz v3 enables secure communication between install-v3 bast
 - **Connection Method**: Private IP addresses (10.0.0.x)
 - **Authentication**: SSH key-based (no passwords)
 
+## Prerequisites
+
+Before deploying SSH keys:
+- ✅ All servers rebuilt (PHASE 1 completed)
+- ✅ Servers accessible via root password
+- ✅ Hetzner root password available
+
 ## Initial Setup
 
 ### 1. Bootstrap install-v3
@@ -19,12 +39,14 @@ Run the bootstrap script on install-v3:
 
 ```bash
 cd /opt/keybuzz/keybuzz-infra/scripts
+export HETZNER_ROOT_PASSWORD="your-temporary-root-password"
 bash bootstrap-install-v3.sh
 ```
 
 This script will:
 - Generate SSH key at `/root/.ssh/id_rsa_keybuzz_v3`
-- Deploy the public key to all servers via public IP
+- Deploy the public key to all **rebuilt** servers via public IP using root password
+- Test connectivity via public IP
 - Test connectivity via private IP
 
 ### 2. Verify SSH Key Generation
